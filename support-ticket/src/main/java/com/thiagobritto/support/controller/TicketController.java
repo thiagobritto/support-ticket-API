@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.thiagobritto.support.domain.Ticket;
 import com.thiagobritto.support.dto.CreateTicketRequest;
+import com.thiagobritto.support.dto.TicketHistoryResponse;
 import com.thiagobritto.support.dto.TicketResponse;
 import com.thiagobritto.support.dto.UpdateTicketStatusRequest;
 import com.thiagobritto.support.service.TicketService;
@@ -29,31 +30,36 @@ public class TicketController {
 	public TicketController(TicketService service) {
 		this.service = service;
 	}
-	
+
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public TicketResponse create(@RequestBody @Valid CreateTicketRequest request) {
-		
-		Ticket ticket = service.createTicket(
-				request.getTitle(), 
-				request.getDescription());
-		
+
+		Ticket ticket = service.createTicket(request.getTitle(), request.getDescription());
+
 		return TicketResponse.from(ticket);
-		
+
 	}
-	
+
 	@GetMapping
 	public List<TicketResponse> list() {
-		
+
 		return service.listTickets().stream().map(TicketResponse::from).toList();
-		
+
 	}
-	
+
 	@PatchMapping("/{id}/status")
 	public TicketResponse updateStatus(@PathVariable Long id, @RequestBody @Valid UpdateTicketStatusRequest request) {
-		
+
 		Ticket ticket = service.changeStatus(id, request.getStatus());
 		return TicketResponse.from(ticket);
-		
+
+	}
+
+	@GetMapping("/{id}/history")
+	public List<TicketHistoryResponse> history(@PathVariable Long id) {
+
+		return service.getTicketHistory(id).stream().map(TicketHistoryResponse::from).toList();
+
 	}
 }

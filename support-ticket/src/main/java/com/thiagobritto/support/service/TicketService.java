@@ -50,7 +50,7 @@ public class TicketService {
 		return ticket;
 	}
 
-	public void validateTransition(TicketStatus oldStatus, TicketStatus newStatus) {
+	private void validateTransition(TicketStatus oldStatus, TicketStatus newStatus) {
 		if (oldStatus == TicketStatus.OPEN && newStatus == TicketStatus.IN_PROGRESS) {
 			return;
 		}
@@ -60,5 +60,9 @@ public class TicketService {
 		}
 
 		throw new IllegalStateException("Invalid status transition: " + oldStatus + " -> " + newStatus);
+	}
+	
+	public List<TicketStatusHistory> getTicketHistory(Long ticketId) {
+	    return ticketStatusHistoryRepository.findByTicketIdOrderByChangedAtDesc(ticketId);
 	}
 }
